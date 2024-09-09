@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{{ username }} page{% endblock %}
+
+{% block name %}{{username}}{% endblock %}
+
+{% block content %}
+<center>
+    <h1 class="text-success p-5">Welcome, {{ username }}!</h1>
+
+    <img src="{{ url_for('static', filename='images/logo.png') }}" width="400" height="150">
+
+</center>
+{% endblock %}
