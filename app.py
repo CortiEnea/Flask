@@ -88,8 +88,31 @@ def find_by_username():
         return f"Utente trovato: {user.username}, Email: {user.email}"
     else:
         return "Utente non trovato."
-
-
+    
+@app.route('/update_user', methods=['POST'])
+def update_user_email():
+    values = request.json
+    username = values["username"]
+    new_email = values["new_mail"]
+    user = User.query.filter_by(username=username).first()
+    if user:
+        user.email = new_email
+        db.session.commit()
+        return f"Email aggiornata per {user.username}"
+    else:
+        return "Utente non trovato."
+    
+@app.route('/delete_user', methods=['POST'])
+def delete_user_by_username():
+    values = request.json
+    username = values["username"]
+    user = User.query.filter_by(username=username).first()
+    if user:
+        db.session.delete(user)
+        db.session.commit()
+        return f"Utente {username} eliminato."
+    else:
+        return "Utente non trovato."
 
 
 if __name__ == '__main__':
