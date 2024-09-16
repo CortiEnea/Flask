@@ -12,6 +12,7 @@ app = Flask(__name__)
 app.register_blueprint(bp_auth, url_prefix='/auth')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://hello_flask_adm:Admin$00@localhost/flask_hello'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = 'bastaaverelumbrelaperspaccarelatestaalcorvacciodimerda'
 db.init_app(app)
 
 migrate = Migrate(app, db)
