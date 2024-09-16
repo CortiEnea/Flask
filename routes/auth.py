@@ -7,6 +7,10 @@ from flask import flash
 from flask import current_app   # definisce il contesto del modulo
 from flask_login import login_user  # https://flask-login.readthedocs.io/en/latest/#flask_login.login_user
 from flask_login import login_required
+from flask_login import current_user
+from flask_login import logout_user
+
+
 
 from models.conn import db
 from models.model import *
@@ -38,8 +42,12 @@ def login_post():
     login_user(user, remember=remember)
     return redirect(url_for('auth.profile'))    
 
+
+@auth.route('/logout')
+@login_required
 def logout():
-    return 'logout'
+    logout_user()  # https://flask-login.readthedocs.io/en/latest/#flask_login.logout_user
+    return 'Logout'
 
 @auth.route('/profile')
 @login_required
