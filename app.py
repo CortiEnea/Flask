@@ -5,8 +5,11 @@ from flask import Flask
 from flask_migrate import Migrate
 from models.conn import db
 from models.model import *
+from flask_login import LoginManager
+from routes.auth import auth as bp_auth
 
 app = Flask(__name__)
+app.register_blueprint(bp_auth, url_prefix='/auth')
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://hello_flask_adm:Admin$00@localhost/flask_hello'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
@@ -121,6 +124,21 @@ def delete_user_by_username():
         return f"Utente {username} eliminato."
     else:
         return "Utente non trovato."
+    
+# flask_login user loader block
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.init_app(app)
+
+@login_manager.user_loader
+def load_user(user_id):
+    # since the user_id is just the primary key of our user table, use it in the query for the user
+    stmt = db.select(User).filter_by(id=user_id)
+    user = db.session.execute(stmt).scalar_one_or_none()
+    
+    # return User.query.get(int(user_id))   # legacy
+    
+    return user
 
 
 if __name__ == '__main__':
