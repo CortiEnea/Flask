@@ -1,0 +1,13 @@
+{% extends "qr_base.html" %}
+
+{% block title %}QR generator{% endblock %}
+
+{% block content %}
+
+    <center>    
+        <h1 class="text-success p-5">Scan your QR code!</h1>
+        <img src="{{ qrcode(url,fill_color=color, back_color=back, error_correction='H', icon_img=file) }}">
+    </center>
+
+{% endblock %}
+
