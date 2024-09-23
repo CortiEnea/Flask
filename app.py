@@ -13,14 +13,17 @@ from dotenv import load_dotenv
 import os
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
+from werkzeug.utils import secure_filename
 
 
 app = Flask(__name__)
 app.register_blueprint(bp_auth, url_prefix='/auth')
 load_dotenv()
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
+app.config['UPLOAD_FOLDER'] = 'static/'
 db.init_app(app)
 
 
@@ -57,15 +60,21 @@ def sum():
     return f'{v1+v2}'
 
 @app.route('/generate_qr/',methods=['POST'])
-def generate_qr():
-    values = request.json
-    name = values["name"]
-    url = values["url"]
-    color = values["color"]
-    back = values["back_color"]
-    icon_img = values["icon_img"]
+def generate_qr():  
+    name = request.form["name"]
+    url = request.form["url"]
+    color = request.form["color"]
+    back = request.form["backcolor"]
+    file = request.files['icon_img']
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
     save_qr_data(name=name,url=url, color=color, back=back)
-    return render_template('qr_generator.html', url=url, color=color, back=back, icon_img=icon_img)
+    return render_template('QR/qr_result.html', url=url, color=color, back=back, file=filename)
+
+@app.route('/qr')
+def qr():
+     return render_template('QR/create_qr.html')
 
 def save_qr_data(name, url, color, back):
     qr = QrData(name=name, link=url, color=color, back=back)
@@ -172,6 +181,11 @@ with app.app_context():
 @user_has_role('admin') # oppure @user_has_role('admin', 'moderator')
 def admin_dashboard():
     return render_template('admin_dashboard.html')
+
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == '__main__':
     app.run(debug=True)
