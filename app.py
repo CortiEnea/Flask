@@ -8,12 +8,13 @@ from models.model import *
 from flask_login import LoginManager
 from routes.auth import auth as bp_auth
 from flask_login import login_required
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 app.register_blueprint(bp_auth, url_prefix='/auth')
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://hello_flask_adm:Admin$00@localhost/flask_hello'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-app.config['SECRET_KEY'] = 'bastaaverelumbrelaperspaccarelatestaalcorvacciodimerda'
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 db.init_app(app)
 
 migrate = Migrate(app, db)
