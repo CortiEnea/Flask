@@ -12,6 +12,7 @@ from flask_login import login_required
 from dotenv import load_dotenv
 import os
 from flask_admin import Admin
+from flask_admin.contrib.sqla import ModelView
 
 
 app = Flask(__name__)
@@ -62,8 +63,9 @@ def generate_qr():
     url = values["url"]
     color = values["color"]
     back = values["back_color"]
+    icon_img = values["icon_img"]
     save_qr_data(name=name,url=url, color=color, back=back)
-    return render_template('qr_generator.html', url=url, color=color, back=back)
+    return render_template('qr_generator.html', url=url, color=color, back=back, icon_img=icon_img)
 
 def save_qr_data(name, url, color, back):
     qr = QrData(name=name, link=url, color=color, back=back)
