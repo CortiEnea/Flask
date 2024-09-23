@@ -9,6 +9,7 @@ from flask_login import LoginManager
 from routes.auth import auth as bp_auth
 from flask_login import login_required
 from dotenv import load_dotenv
+import os
 
 app = Flask(__name__)
 app.register_blueprint(bp_auth, url_prefix='/auth')
