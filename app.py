@@ -5,6 +5,7 @@ from flask import Flask
 from flask_migrate import Migrate
 from models.conn import db
 from models.model import *
+from flask_qrcode import QRcode
 
 app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://hello_flask_adm:Admin$00@localhost/flask_hello'
@@ -12,6 +13,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db.init_app(app)
 
 migrate = Migrate(app, db)
+QRcode(app)
 
 
 
@@ -34,14 +36,15 @@ def sum():
 @app.route('/generate_qr/',methods=['POST'])
 def generate_qr():
     values = request.json
+    name = values["name"]
     url = values["url"]
     color = values["color"]
-    url_qr = f"http://api.qrserver.com/v1/create-qr-code/?data={url}"
-    save_qr_data(url=url, color=color)
-    return render_template('qr_generator.html', url_qr=url_qr)
+    back = values["back_color"]
+    save_qr_data(name=name,url=url, color=color, back=back)
+    return render_template('qr_generator.html', url=url, color=color, back=back)
 
-def save_qr_data(url, color):
-    qr = QrData(link=url, color=color)
+def save_qr_data(name, url, color, back):
+    qr = QrData(name=name, link=url, color=color, back=back)
     db.session.add(qr)  # equivalente a INSERT
     db.session.commit()
     return f"Qr per il seguente link creato con successo: {qr.link}"
