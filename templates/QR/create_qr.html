@@ -1,0 +1,53 @@
+<!-- auth\login.html -->
+{% extends "qr_base.html" %}
+
+{% block title %}Crea il tuo QR{% endblock %}
+
+
+
+{% block content %}
+
+<h1>Personalizza il tuo QR</h1>
+
+<div class="row">
+    <div class="col">
+        <form method="POST" action="generate_qr" enctype=multipart/form-data>
+            <br>
+            <div class="mb-3"></div>
+            <h3>Inserisci un nome:</h3>
+            <input class="form-control" type="text" name="name" placeholder="Inserisci un nome per il tuo QR">
+    </div>
+    <br>
+
+    <div class="mb-3">
+        <h3>Link:</h3>
+        <input class="form-control" type="text" name="url" placeholder="Inserisci il link del tuo QR">
+    </div>
+    <br>
+
+    <h3>Colore di sfondo:</h3>
+
+    <div class="col-1">
+        <input class="form-control" type="color" name="backcolor" id="backcolor" value="#FFFFFF">
+    </div>
+
+
+
+    <h3>Colore del QR:</h3>
+
+    <div class="col-1">
+        <input class="form-control" type="color" name="color" id="color">
+    </div>
+    <br>
+    <br>
+
+    <label for="avatar">Scegli una foto da inserire nel QR:</label>
+
+    <input type="file" id="icon_img" name="icon_img" accept="image/png, image/jpeg" />
+
+    <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+
+</div>
+</div>
+{% endblock %}
