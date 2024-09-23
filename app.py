@@ -7,6 +7,7 @@ from models.conn import db
 from models.model import *
 from flask_login import LoginManager
 from routes.auth import auth as bp_auth
+from flask_login import login_required
 
 app = Flask(__name__)
 app.register_blueprint(bp_auth, url_prefix='/auth')
@@ -141,6 +142,14 @@ def load_user(user_id):
     
     return user
 
+with app.app_context():
+    init_db()
+
+@app.route('/dashboard')
+@login_required
+@user_has_role('admin') # oppure @user_has_role('admin', 'moderator')
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
