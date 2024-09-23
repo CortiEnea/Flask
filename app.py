@@ -5,13 +5,14 @@ from flask import Flask
 from flask_migrate import Migrate
 from models.conn import db
 from models.model import *
+from flask_qrcode import QRcode
 from flask_login import LoginManager
 from routes.auth import auth as bp_auth
 from flask_login import login_required
 from dotenv import load_dotenv
 import os
 from flask_admin import Admin
-from flask_admin.contrib.sqla import ModelView
+
 
 app = Flask(__name__)
 app.register_blueprint(bp_auth, url_prefix='/auth')
@@ -21,12 +22,17 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 db.init_app(app)
 
+
+migrate = Migrate(app, db)
+QRcode(app)
+
 class ProtectedModelView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated
     def inaccessible_callback(self, name, **kwargs):
         # redirect to login page if user doesn't have access
         return redirect(url_for('auth.login', next=request.url))
+
 
 migrate = Migrate(app, db)
 admin = Admin(app, name='Admin dashboard')
@@ -52,14 +58,15 @@ def sum():
 @app.route('/generate_qr/',methods=['POST'])
 def generate_qr():
     values = request.json
+    name = values["name"]
     url = values["url"]
     color = values["color"]
-    url_qr = f"http://api.qrserver.com/v1/create-qr-code/?data={url}"
-    save_qr_data(url=url, color=color)
-    return render_template('qr_generator.html', url_qr=url_qr)
+    back = values["back_color"]
+    save_qr_data(name=name,url=url, color=color, back=back)
+    return render_template('qr_generator.html', url=url, color=color, back=back)
 
-def save_qr_data(url, color):
-    qr = QrData(link=url, color=color)
+def save_qr_data(name, url, color, back):
+    qr = QrData(name=name, link=url, color=color, back=back)
     db.session.add(qr)  # equivalente a INSERT
     db.session.commit()
     return f"Qr per il seguente link creato con successo: {qr.link}"

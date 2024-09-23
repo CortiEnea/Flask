@@ -10,9 +10,11 @@ from flask_login import current_user
 bcrypt = Bcrypt() 
   
 class QrData(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    link = db.Column(db.String(120), unique=True, nullable=False)
-    color = db.Column(db.String(10), unique=True, nullable=False)
+    id = db.Column(db.Integer,unique=True, primary_key=True)
+    name = db.Column(db.String(120), unique=True, nullable=False)
+    link = db.Column(db.String(120), unique=False, nullable=False)
+    color = db.Column(db.String(10), unique=False, nullable=False)
+    back = db.Column(db.String(10), unique=False, nullable=False)
 
 user_roles = db.Table('user_roles',
     db.Column('user_id', db.Integer, db.ForeignKey('user.id')),
