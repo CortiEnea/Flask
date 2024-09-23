@@ -6,15 +6,37 @@ from flask_migrate import Migrate
 from models.conn import db
 from models.model import *
 from flask_qrcode import QRcode
+from flask_login import LoginManager
+from routes.auth import auth as bp_auth
+from flask_login import login_required
+from dotenv import load_dotenv
+import os
+from flask_admin import Admin
+
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://hello_flask_adm:Admin$00@localhost/flask_hello'
+app.register_blueprint(bp_auth, url_prefix='/auth')
+load_dotenv()
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 db.init_app(app)
+
 
 migrate = Migrate(app, db)
 QRcode(app)
 
+class ProtectedModelView(ModelView):
+    def is_accessible(self):
+        return current_user.is_authenticated
+    def inaccessible_callback(self, name, **kwargs):
+        # redirect to login page if user doesn't have access
+        return redirect(url_for('auth.login', next=request.url))
+
+
+migrate = Migrate(app, db)
+admin = Admin(app, name='Admin dashboard')
+admin.add_view(ProtectedModelView(User, db.session))
 
 
 @app.route('/<username>')
@@ -124,7 +146,30 @@ def delete_user_by_username():
         return f"Utente {username} eliminato."
     else:
         return "Utente non trovato."
+    
+# flask_login user loader block
+login_manager = LoginManager()
+login_manager.login_view = 'auth.login'
+login_manager.init_app(app)
 
+@login_manager.user_loader
+def load_user(user_id):
+    # since the user_id is just the primary key of our user table, use it in the query for the user
+    stmt = db.select(User).filter_by(id=user_id)
+    user = db.session.execute(stmt).scalar_one_or_none()
+    
+    # return User.query.get(int(user_id))   # legacy
+    
+    return user
+
+with app.app_context():
+    init_db()
+
+@app.route('/dashboard')
+@login_required
+@user_has_role('admin') # oppure @user_has_role('admin', 'moderator')
+def admin_dashboard():
+    return render_template('admin_dashboard.html')
 
 if __name__ == '__main__':
     app.run(debug=True)
