@@ -19,13 +19,14 @@ class TestTestlogout():
     self.driver.quit()
   
   def test_testlogout(self):
-    self.driver.get("http://localhost:5000/auth/login")
+    self.driver.get("http://localhost:5000/auth/logout")
     self.driver.set_window_size(1400, 1160)
     self.driver.find_element(By.NAME, "email").click()
     self.driver.find_element(By.NAME, "email").send_keys("admin@example.com")
     self.driver.find_element(By.NAME, "password").click()
     self.driver.find_element(By.NAME, "password").send_keys("adminpassword")
-    self.driver.find_element(By.NAME, "password").send_keys(Keys.ENTER)
+    self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
+    assert self.driver.find_element(By.CSS_SELECTOR, ".title").text == "Welcome admin"
     self.driver.find_element(By.LINK_TEXT, "Logout").click()
     assert self.driver.find_element(By.CSS_SELECTOR, "h3").text == "Login"
   

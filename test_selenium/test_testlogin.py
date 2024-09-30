@@ -2,7 +2,6 @@
 import pytest
 import time
 import json
-import sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
@@ -11,7 +10,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-class TestTestHelloWorld():
+class TestTestlogin():
   def setup_method(self, method):
     self.driver = webdriver.Firefox()
     self.vars = {}
@@ -19,14 +18,13 @@ class TestTestHelloWorld():
   def teardown_method(self, method):
     self.driver.quit()
   
-  def test_testHelloWorld(self):
+  def test_testlogin(self):
     self.driver.get("http://localhost:5000/auth/login")
     self.driver.set_window_size(974, 1160)
     self.driver.find_element(By.NAME, "email").click()
     self.driver.find_element(By.NAME, "email").send_keys("admin@example.com")
     self.driver.find_element(By.NAME, "password").click()
-    self.driver.find_element(By.NAME, "password").send_keys("adminpassword")
+    self.driver.find_element(By.NAME, "password").send_keys("passwordsbagliata")
     self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-    self.driver.save_screenshot(f'{sys._getframe().f_code.co_name}.png')
-
+    assert self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "Please check your login details and try again.. Go to login page."
   
