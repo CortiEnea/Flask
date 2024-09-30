@@ -47,7 +47,7 @@ def login_post():
 @login_required
 def logout():
     logout_user()  # https://flask-login.readthedocs.io/en/latest/#flask_login.logout_user
-    return 'Logout'
+    return render_template('auth/login.html')
 
 @auth.route('/profile')
 @login_required
