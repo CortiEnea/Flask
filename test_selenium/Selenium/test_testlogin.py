@@ -2,6 +2,7 @@
 import pytest
 import time
 import json
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
@@ -10,7 +11,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 
-class TestTestlogout():
+class TestTestlogin():
   def setup_method(self, method):
     self.driver = webdriver.Firefox()
     self.vars = {}
@@ -18,15 +19,14 @@ class TestTestlogout():
   def teardown_method(self, method):
     self.driver.quit()
   
-  def test_testlogout(self):
-    self.driver.get("http://localhost:5000/auth/logout")
-    self.driver.set_window_size(1400, 1160)
+  def test_testlogin(self):
+    self.driver.get("http://localhost:5000/auth/login")
+    self.driver.set_window_size(974, 1160)
     self.driver.find_element(By.NAME, "email").click()
     self.driver.find_element(By.NAME, "email").send_keys("admin@example.com")
     self.driver.find_element(By.NAME, "password").click()
-    self.driver.find_element(By.NAME, "password").send_keys("adminpassword")
+    self.driver.find_element(By.NAME, "password").send_keys("passwordsbagliata")
     self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
-    assert self.driver.find_element(By.CSS_SELECTOR, ".title").text == "Welcome admin"
-    self.driver.find_element(By.LINK_TEXT, "Logout").click()
-    assert self.driver.find_element(By.CSS_SELECTOR, "h3").text == "Login"
+    assert self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "Please check your login details and try again.. Go to login page."
+    self.driver.save_screenshot(f'{sys._getframe().f_code.co_name}.png')
   
