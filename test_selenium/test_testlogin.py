@@ -2,6 +2,7 @@
 import pytest
 import time
 import json
+import sys
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.action_chains import ActionChains
@@ -27,4 +28,5 @@ class TestTestlogin():
     self.driver.find_element(By.NAME, "password").send_keys("passwordsbagliata")
     self.driver.find_element(By.CSS_SELECTOR, ".btn").click()
     assert self.driver.find_element(By.CSS_SELECTOR, ".alert").text == "Please check your login details and try again.. Go to login page."
+    self.driver.save_screenshot(f'{sys._getframe().f_code.co_name}.png')
   
