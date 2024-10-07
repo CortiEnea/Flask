@@ -1,0 +1,11 @@
+(.selenium) E:\scuola\Samt\I4BB\Labo_Approfondimento_1\hello_world\Flask>pytest
+============================================= test session starts ==============================================
+platform win32 -- Python 3.12.3, pytest-8.3.3, pluggy-1.5.0
+rootdir: E:\scuola\Samt\I4BB\Labo_Approfondimento_1\hello_world\Flask
+collected 3 items
+
+test_selenium\test_testHelloWorld.py .                                                                    [ 33%]
+test_selenium\test_testlogin.py .                                                                         [ 66%]
+test_selenium\test_testlogout.py .                                                                        [100%]
+
+============================================== 3 passed in 27.54s ==============================================
