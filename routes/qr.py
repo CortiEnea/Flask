@@ -37,12 +37,12 @@ def generate_qr():
     if file and allowed_file(file.filename):
         filename = secure_filename(file.filename)
         file.save(os.path.join(current_app.config['UPLOAD_FOLDER'], filename))
-    save_qr_data(name=name,url=url, color=color, back=back)
+    save_qr_data(name=name,url=url, color=color, back=back,file=filename)
     return render_template('QR/qr_result.html', url=url, color=color, back=back, file=filename)
 
 
-def save_qr_data(name, url, color, back):
-    qr = QrData(name=name, link=url, color=color, back=back)
+def save_qr_data(name, url, color, back, file):
+    qr = QrData(name=name, link=url, color=color, back=back, filename=file)
     db.session.add(qr)  # equivalente a INSERT
     db.session.commit() 
     return f"Qr per il seguente link creato con successo: {qr.link}"
