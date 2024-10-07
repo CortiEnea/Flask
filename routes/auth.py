@@ -40,14 +40,16 @@ def login_post():
 
     # if the above check passes, then we know the user has the right credentials
     login_user(user, remember=remember)
-    return redirect(url_for('auth.profile'))    
+    return redirect(url_for('qr.history'))    
 
 
 @auth.route('/logout')
 @login_required
 def logout():
     logout_user()  # https://flask-login.readthedocs.io/en/latest/#flask_login.logout_user
+
     return render_template('auth/login.html')
+
 
 @auth.route('/profile')
 @login_required
