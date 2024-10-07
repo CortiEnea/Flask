@@ -9,7 +9,7 @@
         <img src="{{ qrcode(url,fill_color=color, back_color=back, error_correction='H', icon_img=file) }}" style="height: 20%;">
         <div class="card" style="width: 18rem;">
             <div class="card-header text-center">
-                <strong>QR Code Attributes</strong>
+                <strong>{{ qr.name }}</strong>
             </div>
             <ul class="list-group list-group-flush">
                 <li class="list-group-item"><strong>URL:</strong> {{ url }}</li>
