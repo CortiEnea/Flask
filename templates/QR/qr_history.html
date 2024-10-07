@@ -1,0 +1,11 @@
+{% extends "qr_base.html" %}
+
+{% block content %}
+    {% for qrcode in qrcodes %}
+
+    <p>{{qrcode.link}}</p>
+
+    {% endfor %}
+
+
+{% endblock %}

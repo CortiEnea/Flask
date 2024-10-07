@@ -5,30 +5,33 @@ from flask import Flask
 from flask_migrate import Migrate
 from models.conn import db
 from models.model import *
-from flask_qrcode import QRcode
+
 from flask_login import LoginManager
 from routes.auth import auth as bp_auth
+from routes.qr import qrcode as bp_qr
 from flask_login import login_required
 from dotenv import load_dotenv
 import os
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
-from werkzeug.utils import secure_filename
+from flask_qrcode import QRcode
+
+
 
 
 app = Flask(__name__)
 app.register_blueprint(bp_auth, url_prefix='/auth')
+app.register_blueprint(bp_qr, url_prefix='/QR')
 load_dotenv()
-ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'}
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY')
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('SQLALCHEMY_DATABASE_URI')
 app.config['UPLOAD_FOLDER'] = 'static/'
+
 db.init_app(app)
 
-
-migrate = Migrate(app, db)
 QRcode(app)
+migrate = Migrate(app, db)
 
 class ProtectedModelView(ModelView):
     def is_accessible(self):
@@ -59,30 +62,9 @@ def sum():
     v2 = values["v2"]
     return f'{v1+v2}'
 
-@app.route('/generate_qr/',methods=['POST'])
-def generate_qr():  
-    name = request.form["name"]
-    url = request.form["url"]
-    color = request.form["color"]
-    back = request.form["backcolor"]
-    file = request.files['icon_img']
-    if file and allowed_file(file.filename):
-        filename = secure_filename(file.filename)
-        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    save_qr_data(name=name,url=url, color=color, back=back)
-    return render_template('QR/qr_result.html', url=url, color=color, back=back, file=filename)
 
-@app.route('/qr')
-def qr():
-     return render_template('QR/create_qr.html')
 
-def save_qr_data(name, url, color, back):
-    qr = QrData(name=name, link=url, color=color, back=back)
-    db.session.add(qr)  # equivalente a INSERT
-    db.session.commit()
-    return f"Qr per il seguente link creato con successo: {qr.link}"
-
-@app.route('/test_user')
+@app.route('/')
 def test_user():
     # Creazione di un nuovo utente con una password criptata
     user = User(username='testuser', email='test@example.com')
@@ -182,10 +164,6 @@ with app.app_context():
 def admin_dashboard():
     return render_template('admin_dashboard.html')
 
-
-def allowed_file(filename):
-    return '.' in filename and \
-           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 if __name__ == '__main__':
     app.run(debug=True)
